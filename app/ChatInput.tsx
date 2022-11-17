@@ -2,15 +2,21 @@
 import { FormEvent, useState } from "react";
 import { v4 as uuid } from "uuid";
 import { Message } from "../typing";
+import useSWR from "swr";
+import fetcher from "../utils/fetchMessages";
 function ChatInput() {
   const [input, setInput] = useState("");
-  const addMessage = (e: FormEvent<HTMLFormElement>) => {
+
+  /*fetching messages and store it into  cache >> [KEY - /api/getMessages]*/
+  const { data: messages, mutate, error } = useSWR("/api/getMessages", fetcher);
+  console.log("fetching messages...", messages);
+
+  const addMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); /* it is not refresh */
     if (!input) return;
     const messageToSend: string = input;
     setInput("");
     const id = uuid();
-
     const message: Message = {
       id,
       message: messageToSend,
@@ -20,7 +26,7 @@ function ChatInput() {
       email: "test@test.email.com",
     };
     const uploadMessageToUpstash = async () => {
-      const req = await fetch("/api/addMessage", {
+      const data = await fetch("/api/addMessage", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,12 +34,16 @@ function ChatInput() {
         body: JSON.stringify({
           message,
         }),
-      });
-      const data = await req.json();
-      console.log("Message added ...", data);
+      }).then((res) => res.json());
+      return [data.message, ...messages!];
     };
-    uploadMessageToUpstash();
+    //@ts-ignore
+    await mutate(uploadMessageToUpstash, {
+      optimisticData: [message, ...messages!],
+      rollbackOnError:true,/*if their is an error it is going to rollback the previous cache*/
+    });
   };
+
   return (
     <form
       onSubmit={addMessage}
