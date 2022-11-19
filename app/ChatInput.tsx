@@ -15,7 +15,7 @@ function ChatInput() {
     e.preventDefault(); /* it is not refresh */
     if (!input) return;
     const messageToSend: string = input;
-    setInput("");
+    setInput('');
     const id = uuid();
     const message: Message = {
       id,
@@ -47,7 +47,7 @@ function ChatInput() {
   return (
     <form
       onSubmit={addMessage}
-      className="flex px-10 py-5 space-x-2 border-t border-gray-100 fixed bottom-0 z-50 w-full"
+      className="flex px-10 py-5 space-x-2 border-t border-gray-100 fixed bottom-0 z-50 w-full bg-white"
     >
       <input
         type="text"
