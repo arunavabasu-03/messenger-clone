@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect } from "react";
 import useSWR from "swr";
 import { clientPusher } from "../pusher";

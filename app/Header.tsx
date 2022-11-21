@@ -3,7 +3,7 @@ import Link from "next/link";
 import LogoutButton from "./LogoutButton";
 
 function Header() {
-  const session = true;
+  const session = false;
   if (session) {
     return (
       <header className="flex sticky top-0 z-50 bg-white justify-between items-center p-10 shadow-sm">
